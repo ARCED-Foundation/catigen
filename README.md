@@ -1,2 +1,2 @@
 # catigen
-A Stata command to automatically generate SurveyCTO advanced CATI from a SurveyCTO CAPI.
+A Stata module to automatically generate SurveyCTO advanced CATI from a SurveyCTO CAPI.
