@@ -2,7 +2,7 @@
 cap pr drop catigen
  
 program catigen, rclass
-	vers 10.1
+	vers 12.0
 	
 	syntax using, [formid(str) Title(str)] Saving(str) ATTACHment(str)
 		
@@ -21,7 +21,7 @@ program catigen, rclass
 			qui copy "https://github.com/ARCED-Foundation/catigen/raw/master/templates/`file'" ///
 				"`attachment'/`file'", replace
 		}
-				
+			
 		noi di "Downloads completed.", _n
 		
 	qui {
@@ -42,7 +42,7 @@ program catigen, rclass
 			
 			replace version = `"=TEXT(YEAR(NOW())-2000, "00") & TEXT(MONTH(NOW()), "00") & TEXT(DAY(NOW()), "00") & TEXT(HOUR(NOW()), "00") & TEXT(MINUTE(NOW()), "00")"' in 1
 			replace instance_name = "concat('Status: ', $" + "{call_status_label}, 'ID: ', $" + "{id})" in 1
-			
+		
 			set obs 2
 			foreach var of varlist form_title form_id version public_key submission_url default_language instance_name {
 				cap confirm var `var'
@@ -136,7 +136,39 @@ program catigen, rclass
 				foreach var of local capilabels {
 						loc lang`x' = "`var'"
 						loc ++x
-				}				
+				}	
+				
+			* Find all hints 
+				unab capihintvars: hint*
+				loc capihintcount `=wordcount("`capihintvars'")'
+			
+				loc x = 1
+				foreach var of local capihintvars {
+						loc hint`x' = "`var'"
+						loc ++x
+				}
+				
+				* Find all constraintmessage 
+				unab capiconsmessvars: constraintmessage*
+				loc capiconsmesscount `=wordcount("`capiconsmessvars'")'
+			
+				loc x = 1
+				foreach var of local capiconsmessvars {
+						loc constraintmessage`x' = "`var'"
+						loc ++x
+				}
+				
+				* Find all mediaimage
+				unab capimimagevars: mediaimage*
+				loc capmimagecount `=wordcount("`capimimagevars'")'
+			
+				loc x = 1
+				foreach var of local capimimagevars {
+						loc capimimagevars`x' = "`var'"
+						loc ++x
+				}
+				
+			
 			
 			gen capisl = _n // Generate a serial so that the question order does not change mistakenly
 			
@@ -160,7 +192,7 @@ program catigen, rclass
 					}
 				}
 
-			* rename all labels to make them uniform			
+			* rename all '===labels===' to make them uniform			
 				unab catilabels: label* 
 				foreach var of local catilabels {
 					forval x = 1/`capicount' {
@@ -173,7 +205,49 @@ program catigen, rclass
 				Do the above for hint constraintmessage mediaimage mediaaudio mediavideo
 				
 			*/
+			* rename all '===hints===' to make them uniform			
+				unab catihintvars: hint* 
+				foreach var of local catihintvars {
+					forval x = 1/`capihintcount' {
+						if regex(lower("`var'"), lower("`hint`x''")) {
+							ren `var' `hint`x''
+						}
+					}						
+				}
 			
+
+				* rename all '===constraintmessage===' to make them uniform			
+					unab caticonsmsvars: constraintmessage* 
+					
+					if `capiconsmesscount'==1 {
+						cap g `capiconsmessvars' = constraintmessageenglish
+
+						foreach var of local caticonsmsvars {
+							if "`var'" != "`capiconsmessvars'"	drop `var'					
+						}
+					}
+					
+
+					else {
+						foreach var of local caticonsmsvars {
+							forval x = 1/`capiconsmesscount' {
+								if regex(lower("`var'"), lower("`consms`x''")) & !mi("`consms`x''") {
+									ren `var' `consms`x''
+								}
+							}						
+						}
+					}
+
+					order `capiconsmessvars', after(constraint)
+				
+				
+				
+				* drop all '===mediaimage===' to make them uniform			
+					drop mediaimage* 
+				
+				
+			
+				
 			* Separate the first and last part of CATI
 				gen catisl = _n 
 				
@@ -204,7 +278,9 @@ program catigen, rclass
 					
 				* Bring in CATI last part
 					append using `cati_end'
-	
+				
+				* Order media image
+					order media*, after(repeat_count)
 				
 				/*
 								
@@ -246,10 +322,10 @@ program catigen, rclass
 				}
 				
 		
-			drop catisl capisl miss drop
+			drop catisl capisl miss drop			
 			export excel using `"`saving'"', keepcellfmt sheet(survey) sheetmodify
 	
-	
+			
 	* retrieve memory data
 		u `olddata', clear
 		
@@ -265,5 +341,8 @@ end
 
 pause on
 
-catigen using "C:\Users\Mehrab Ali\Documents\GitHub\catigen\dropout_survey_2022.xlsx",  s("C:\Users\Mehrab Ali\Documents\GitHub\catigen\WB CATI Form.xlsx") ///
-	attach("C:\Users\Mehrab Ali\Documents\GitHub\catigen\attachments")
+
+	 // set tr on
+catigen using "E:\arced-github-repo\catigen\dropout_survey_2022.xlsx",  s("E:\arced-github-repo\catigen\WB CATI Form.xlsx") ///
+	attach("E:\arced-github-repo\catigen\attachments")
+	
