@@ -1,10 +1,10 @@
-*! version 0.0.1 SoTLab, ARCED Foundation 14jun2022
+*! version 1.0.1 SoTLab, ARCED Foundation 14jun2022
 cap pr drop catigen
  
 program catigen, rclass
-	vers 12.0
+	vers 15.0
 	
-	syntax using, [formid(str) Title(str)] Saving(str) ATTACHment(str)
+	syntax using, Saving(str) ATTACHment(str)
 		
 	
 	**# download CATI template
@@ -40,12 +40,6 @@ program catigen, rclass
 			import excel `using', sheet(settings) clear first
 			drop if _n>1
 			
-			** If formid and title specified
-				if !mi("`formid'") {
-					replace form_id		= "``formid''" in 1
-					replace form_title 	= "`title'" in 1	
-				}
-			
 			levelsof form_id, clean loc(formid) 
 			replace version = `"=TEXT(YEAR(NOW())-2000, "00") & TEXT(MONTH(NOW()), "00") & TEXT(DAY(NOW()), "00") & TEXT(HOUR(NOW()), "00") & TEXT(MINUTE(NOW()), "00")"' in 1
 			replace instance_name = "concat('Status: ', $" + "{call_status_label}, 'ID: ', $" + "{id})" in 1
@@ -65,7 +59,11 @@ program catigen, rclass
 			export excel form_title form_id version public_key submission_url default_language instance_name ///
 						 using `"`saving'"', keepcellfmt sheet(settings) sheetmodify	
 						 
-						 
+			putexcel set `"`saving'"', sheet(settings) modify
+			putexcel C2 = formula(TEXT(YEAR(NOW())-2000, "00") & TEXT(MONTH(NOW()), "00") & TEXT(DAY(NOW()), "00") & TEXT(HOUR(NOW()), "00") & TEXT(MINUTE(NOW()), "00"))
+			putexcel clear
+			
+			
 		**# Work on Choices sheet
 			import excel `using', sheet(choices) clear first all
 			
@@ -348,10 +346,10 @@ program catigen, rclass
 			
 		**# Work on XML file 
 			file open xmlfile using "`attachment'/respondents_advanced.xml", write read
-			file seek xmlfile 1085
-			file write xmlfile "`formid'</linkObjectId>" _skip(10) _char(10) _char(09) _char(09)
+			file seek xmlfile 1155
+			file write xmlfile "`formid'</linkObjectId>" _skip(21) _char(10) _char(09) _char(09)
 			file seek xmlfile 826
-			file write xmlfile "`formid'</formId>" _skip(20) _char(10) _char(09) _char(09) 
+			file write xmlfile "`formid'</formId>" _skip(25) _char(10) _char(09) _char(09) 
 			file close xmlfile
 			
 		noi di as result `"The CATI questionnaire is saved here {browse "`saving'":`saving'}"', _n
@@ -369,15 +367,10 @@ program catigen, rclass
 			di as text `"	- Check the {browse "`attachment'/respondents_advanced.xml":respondents_advanced.xml} file and see everything is fine."'
 			di as text `"	- Use the {browse "`attachment'/template_user_assignment.do":template_user_assignment.do} for generating respondents.csv preload file."'
 			di as text `"	- Upload the CATI with attaching phone-call.fieldplugin.zip launch-sms.fieldplugin.zip and table-list.fieldplugin.zip"'
-			di as text `"	- Read further about the CATI workflow on {browse "https://support.surveycto.com/hc/en-us/articles/360046370714-Advanced-CATI-sample-workflow":this SurveyCTO Blog}."'
+			di as text `"	- Read further about the CATI workflow on {browse "https://support.surveycto.com/hc/en-us/articles/360046370714-Advanced-CATI-sample-workflow":this SurveyCTO Blog}."', _n
+			di as result `"catigen is developed by {browse "https://sotlab.arced.foundation":Solutions of Things Lab (SoTLab)} of {browse "https://arced.foundation":ARCED Foundaiton}."'
 		}
 		 
 end
 
 
-
-	 // set tr on
-catigen using "C:\Users\Mehrab Ali\Documents\GitHub\catigen\Testing\dropout_survey_2022.xlsx", ///
-			s("C:\Users\Mehrab Ali\Documents\GitHub\catigen\Testing\WB CATI Form.xlsx") ///
-			attach("C:\Users\Mehrab Ali\Documents\GitHub\catigen\Testing\Attachments")
-	
