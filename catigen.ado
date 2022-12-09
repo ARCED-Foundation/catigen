@@ -18,17 +18,17 @@ program catigen, rclass
 		
 		
 		cap mkdir "`attachment'"
-		if !_rc di `"Attachment folder not found, now created a new folder: {browse "`attachment'": `attachment'}"', _n
+		if !_rc di as result `"Attachment folder not found, now created a new folder:{browse "`attachment'": `attachment'}"', _n
 		
 		loc filelist = "phone-call.fieldplugin.zip  launch-sms.fieldplugin.zip table-list.fieldplugin.zip respondents_advanced.xml template_user_assignment.do"
 		
 		foreach file of loc filelist {
-			noi di "downloading `file'"
+			noi di as result "downloading `file'"
 			qui copy "https://github.com/ARCED-Foundation/catigen/raw/master/templates/`file'" ///
 				"`attachment'/`file'", replace
 		}
 			
-		noi di "Downloads completed.", _n
+		noi di as result "Downloads completed.", _n
 		
 	qui {
 		
