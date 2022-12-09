@@ -20,7 +20,7 @@ program catigen, rclass
 		cap mkdir "`attachment'"
 		if !_rc di `"Attachment folder not found, now created a new folder: {browse "`attachment'": `attachment'}"', _n
 		
-		loc filelist = "phone-call.fieldplugin.zip  launch-sms.fieldplugin.zip table-list.fieldplugin.zip respondents_advanced.xml"
+		loc filelist = "phone-call.fieldplugin.zip  launch-sms.fieldplugin.zip table-list.fieldplugin.zip respondents_advanced.xml template_user_assignment.do"
 		
 		foreach file of loc filelist {
 			noi di "downloading `file'"
@@ -42,10 +42,11 @@ program catigen, rclass
 			
 			** If formid and title specified
 				if !mi("`formid'") {
-					replace form_id		= "`formid'" in 1
+					replace form_id		= "``formid''" in 1
 					replace form_title 	= "`title'" in 1	
 				}
 			
+			levelsof form_id, clean loc(formid) 
 			replace version = `"=TEXT(YEAR(NOW())-2000, "00") & TEXT(MONTH(NOW()), "00") & TEXT(DAY(NOW()), "00") & TEXT(HOUR(NOW()), "00") & TEXT(MINUTE(NOW()), "00")"' in 1
 			replace instance_name = "concat('Status: ', $" + "{call_status_label}, 'ID: ', $" + "{id})" in 1
 		
@@ -256,8 +257,7 @@ program catigen, rclass
 				
 			* Separate the first and last part of CATI
 				gen catisl = _n 
-				
-				g drop =  _n if name[_n-1]=="consented" 
+				g drop =  _n if name[_n-1]=="have_availability" 
 				replace drop = drop[_n-1]+1 if !mi(drop[_n-1])
 				
 				* Save last part in memory 
@@ -327,10 +327,34 @@ program catigen, rclass
 					replace `var' = regexr(`var', "constraint", "constraint ") in 1
 				}
 				
-		
-			drop catisl capisl miss drop			
+			
+			* Finding duplicate fields and stop the program
+			
+				duplicates tag name if !mi(name) & !inlist(type, "end group", "end repeat", "type"), gen(dup)
+				sum dup 
+				if `r(max)'>0 {
+					levelsof name if dup>0 & !mi(dup), clean loc(dupvars)
+													
+					disp as err `"CATI template already have these variables. Either remove or rename them from the CAPI file and try again."'
+					foreach var of loc dupvars {
+						disp as err "	`var'"
+					}
+					rm `"`saving'"'
+					ex 110
+				}
+			
+			drop catisl capisl miss drop dup			
 			export excel using `"`saving'"', keepcellfmt sheet(survey) sheetmodify
-	
+			
+		**# Work on XML file 
+			file open xmlfile using "`attachment'/respondents_advanced.xml", write read
+			file seek xmlfile 1085
+			file write xmlfile "`formid'</linkObjectId>" _skip(10) _char(10) _char(09) _char(09)
+			file seek xmlfile 826
+			file write xmlfile "`formid'</formId>" _skip(20) _char(10) _char(09) _char(09) 
+			file close xmlfile
+			
+		noi di as result `"The CATI questionnaire is saved here {browse "`saving'":`saving'}"', _n
 			
 	* retrieve memory data
 		u `olddata', clear
@@ -339,13 +363,17 @@ program catigen, rclass
 	
 	* Further Instructions
 		noi {
-			di "Further instrustions:", _n
-			di "`instrunction1'", _n
+			di as result "Further instrustions:"
+			di as text `"	- The CAPI questions are inserted from row 137."'
+			di as text `"	- Delete any blank rows if you wish."'
+			di as text `"	- Check the {browse "`attachment'/respondents_advanced.xml":respondents_advanced.xml} file and see everything is fine."'
+			di as text `"	- Use the {browse "`attachment'/template_user_assignment.do":template_user_assignment.do} for generating respondents.csv preload file."'
+			di as text `"	- Upload the CATI with attaching phone-call.fieldplugin.zip launch-sms.fieldplugin.zip and table-list.fieldplugin.zip"'
+			di as text `"	- Read further about the CATI workflow on {browse "https://support.surveycto.com/hc/en-us/articles/360046370714-Advanced-CATI-sample-workflow":this SurveyCTO Blog}."'
 		}
 		 
 end
 
-pause off
 
 
 	 // set tr on
