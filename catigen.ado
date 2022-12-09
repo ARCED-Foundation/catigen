@@ -369,8 +369,20 @@ program catigen, rclass
 			di as text `"	- Upload the CATI with attaching phone-call.fieldplugin.zip, launch-sms.fieldplugin.zip and table-list.fieldplugin.zip"'
 			di as text `"	- Read further about the CATI workflow on {browse "https://support.surveycto.com/hc/en-us/articles/360046370714-Advanced-CATI-sample-workflow":this SurveyCTO Blog}."', _n
 			di as result `"catigen is developed by {browse "https://sotlab.arced.foundation":Solutions of Things Lab (SoTLab)} of {browse "https://arced.foundation":ARCED Foundaiton}."'
+			sotlab
 		}
 		 
 end
 
 
+cap pr drop sotlab 
+pr def sotlab 
+di	"   _____     _______ _           _     "
+di	"  / ____|   |__   __| |         | |  " 
+di  "  | (___   ___ | |  | |     __ _| |__  "
+di	"   \___ \ / _ \| |  | |    / _  |  _ \ "
+di	"   ____) | (_) | |  | |___| (_| | |_) | "
+di	"  |_____/ \___/|_|  |______\__,_|_.__/ "
+di	"        Solutions of Things Lab "
+
+end	
