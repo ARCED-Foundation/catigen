@@ -52,6 +52,12 @@ help catigen
 
 ```
 
-Please report all bugs/feature request to the <a href="https://github.com/ARCED-Foundation/catigen/issues" target="_blank"> github issues page</a>.
+Please report all bugs/feature request to the <a href="https://github.com/ARCED-Foundation/catigen/issues" target="_blank"> github issues page</a> or e-mail sotlab@arced-foundation.org.
 
 
+## Authors
+Mehrab Ali
+
+Tasmin Pritha
+
+<a href="https://sotlab.arced.foundation" target="_blank">Solutions of Things Lab</a>, <a href="https://arced.foundation" target="_blank">ARCED Foundation</a>
