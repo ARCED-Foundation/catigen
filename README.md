@@ -1,4 +1,4 @@
-# catigen
+# catigen (beta) 
 
 ``catigen`` is a Stata module to automatically generate <a href="https://www.surveycto.com" target="_blank">SurveyCTO</a> advanced CATI from a <a href="https://www.surveycto.com" target="_blank">SurveyCTO</a> CAPI. This program uses <a href="https://support.surveycto.com/hc/en-us/articles/360046370714-Advanced-CATI-sample-workflow" target="_blank">SurveyCTO advanced CATI</a> template to generate a new CATI based on a SurveyCTO CAPI.
 
@@ -16,7 +16,7 @@ The program does the followings:
 
 
 # Versions
-Current version at <a href="https://github.com/ARCED-Foundation/catigen#installation" target="_blank">GitHub</a>: 1.0.1 <br>
+Current version at <a href="https://github.com/ARCED-Foundation/catigen#installation" target="_blank">GitHub</a>: 1.0.1 (beta) <br>
 
 
 
