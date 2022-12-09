@@ -364,9 +364,9 @@ program catigen, rclass
 			di as result "Further instrustions:"
 			di as text `"	- The CAPI questions are inserted from row 137."'
 			di as text `"	- Delete any blank rows if you wish."'
-			di as text `"	- Check the {browse "`attachment'/respondents_advanced.xml":respondents_advanced.xml} file and see everything is fine."'
+			di as text `"	- Check the {browse "`attachment'/respondents_advanced.xml":respondents_advanced.xml} file and see if everything is fine."'
 			di as text `"	- Use the {browse "`attachment'/template_user_assignment.do":template_user_assignment.do} for generating respondents.csv preload file."'
-			di as text `"	- Upload the CATI with attaching phone-call.fieldplugin.zip launch-sms.fieldplugin.zip and table-list.fieldplugin.zip"'
+			di as text `"	- Upload the CATI with attaching phone-call.fieldplugin.zip, launch-sms.fieldplugin.zip and table-list.fieldplugin.zip"'
 			di as text `"	- Read further about the CATI workflow on {browse "https://support.surveycto.com/hc/en-us/articles/360046370714-Advanced-CATI-sample-workflow":this SurveyCTO Blog}."', _n
 			di as result `"catigen is developed by {browse "https://sotlab.arced.foundation":Solutions of Things Lab (SoTLab)} of {browse "https://arced.foundation":ARCED Foundaiton}."'
 		}
