@@ -1,4 +1,4 @@
-*! version 0.0.1 ARCED Foundation 14jun2022
+*! version 0.0.1 SoTLab, ARCED Foundation 14jun2022
 cap pr drop catigen
  
 program catigen, rclass
@@ -8,8 +8,14 @@ program catigen, rclass
 		
 	
 	**# download CATI template
-		copy "https://github.com/ARCED-Foundation/catigen/raw/master/templates/ARCED_Advanced%20CATI%20starter%20kit%20sample%20form%20(non-case%20management).xlsx" ///
-				`"`saving'"', replace
+		/*
+				copy "https://github.com/ARCED-Foundation/catigen/raw/master/templates/ARCED_Advanced%20CATI%20starter%20kit%20sample%20form%20(non-case%20management).xlsx" ///
+						`"`saving'"', replace
+		*/
+		
+		copy "https://github.com/ARCED-Foundation/catigen/raw/master/templates/Advanced%20CATI%20starter%20kit%20sample%20form%20(non-case%20management).xlsx" ///
+						`"`saving'"', replace
+		
 		
 		cap mkdir "`attachment'"
 		if !_rc di `"Attachment folder not found, now created a new folder: {browse "`attachment'": `attachment'}"', _n
@@ -339,10 +345,11 @@ program catigen, rclass
 		 
 end
 
-pause on
+pause off
 
 
 	 // set tr on
-catigen using "E:\arced-github-repo\catigen\dropout_survey_2022.xlsx",  s("E:\arced-github-repo\catigen\WB CATI Form.xlsx") ///
-	attach("E:\arced-github-repo\catigen\attachments")
+catigen using "C:\Users\Mehrab Ali\Documents\GitHub\catigen\Testing\dropout_survey_2022.xlsx", ///
+			s("C:\Users\Mehrab Ali\Documents\GitHub\catigen\Testing\WB CATI Form.xlsx") ///
+			attach("C:\Users\Mehrab Ali\Documents\GitHub\catigen\Testing\Attachments")
 	
