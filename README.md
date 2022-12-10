@@ -61,3 +61,12 @@ Mehrab Ali
 Tasmin Pritha
 
 <a href="https://sotlab.arced.foundation" target="_blank">Solutions of Things Lab</a>, <a href="https://arced.foundation" target="_blank">ARCED Foundation</a>
+```
+   _____     _______ _           _     
+  / ____|   |__   __| |         | |  
+  | (___   ___ | |  | |     __ _| |__  
+   \___ \ / _ \| |  | |    / _  |  _ \ 
+   ____) | (_) | |  | |___| (_| | |_) | 
+  |_____/ \___/|_|  |______\__,_|_.__/ 
+        Solutions of Things Lab 
+```
