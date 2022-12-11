@@ -1,6 +1,6 @@
 # catigen (beta) 
 
-``catigen`` is a Stata module to automatically generate <a href="https://www.surveycto.com" target="_blank">SurveyCTO</a>/ advanced CATI from a <a href="https://www.surveycto.com" target="_blank">SurveyCTO</a>/ODK CAPI XLSForm. This program uses <a href="https://support.surveycto.com/hc/en-us/articles/360046370714-Advanced-CATI-sample-workflow" target="_blank">SurveyCTO advanced CATI</a> template to generate a new CATI based on a SurveyCTO CAPI.
+``catigen`` is a Stata module to automatically generate <a href="https://www.surveycto.com" target="_blank">SurveyCTO</a>/ advanced CATI from a <a href="https://www.surveycto.com" target="_blank">SurveyCTO</a>/ODK CAPI XLSForm. This program uses <a href="https://support.surveycto.com/hc/en-us/articles/360046370714-Advanced-CATI-sample-workflow" target="_blank">SurveyCTO advanced CATI</a> template to generate a new CATI based on a CAPI XLSForm.
 
 The program does the followings:
 
