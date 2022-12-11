@@ -33,7 +33,7 @@ Automatically generates SurveyCTO CATI from a CAPI XLSForm
 
     The program does the followings:
 
-       1. Downloads the templates from ARCED's GitHub repo.
+       1. Downloads the templates from ARCED's {browse "https://github.com/ARCED-Foundation/catigen/tree/master/templates":GitHub repo}.
 
        2. Generates the CATI XLSForm
 
