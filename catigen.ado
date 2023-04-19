@@ -1,10 +1,10 @@
-*! version 1.0.1 SoTLab, ARCED Foundation 14jun2022
+*! version 1.1.0 SoTLab, ARCED Foundation 14jun2022 * Mehrab Ali * Tasmin Prita
 cap pr drop catigen
  
 program catigen, rclass
 	vers 15.0
 	
-	syntax using, Saving(str) ATTACHment(str)
+	syntax using, Saving(str) ATTACHment(str) [Template(str)]
 		
 	
 	**# download CATI template
@@ -13,9 +13,15 @@ program catigen, rclass
 						`"`saving'"', replace
 		*/
 		
-		copy "https://github.com/ARCED-Foundation/catigen/raw/master/templates/Advanced%20CATI%20starter%20kit%20sample%20form%20(non-case%20management).xlsx" ///
+		if mi("`template'") {
+			copy "https://github.com/ARCED-Foundation/catigen/raw/master/templates/Advanced%20CATI%20starter%20kit%20sample%20form%20(non-case%20management).xlsx" ///
 						`"`saving'"', replace
+		}
 		
+		if !mi("`template'") {
+			copy "https://github.com/ARCED-Foundation/catigen/raw/master/templates/Advanced%20CATI%20starter%20kit%20sample%20form%20(non-case%20management)_`template'.xlsx" ///
+						`"`saving'"', replace
+		}
 		
 		cap mkdir "`attachment'"
 		if !_rc di as result `"Attachment folder not found, now created a new folder:{browse "`attachment'": `attachment'}"', _n
@@ -41,7 +47,7 @@ program catigen, rclass
 			drop if _n>1
 			
 			levelsof form_id, clean loc(formid) 
-			replace version = `"=TEXT(YEAR(NOW())-2000, "00") & TEXT(MONTH(NOW()), "00") & TEXT(DAY(NOW()), "00") & TEXT(HOUR(NOW()), "00") & TEXT(MINUTE(NOW()), "00")"' in 1
+			// replace version = `"=TEXT(YEAR(NOW())-2000, "00") & TEXT(MONTH(NOW()), "00") & TEXT(DAY(NOW()), "00") & TEXT(HOUR(NOW()), "00") & TEXT(MINUTE(NOW()), "00")"' in 1
 			replace instance_name = "concat('Status: ', $" + "{call_status_label}, 'ID: ', $" + "{id})" in 1
 		
 			set obs 2
