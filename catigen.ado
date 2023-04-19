@@ -1,4 +1,4 @@
-*! version 1.1.0 SoTLab, ARCED Foundation 14jun2022 * Mehrab Ali * Tasmin Prita
+*! version 1.1.0 SoTLab, ARCED Foundation 14jun2022 
 cap pr drop catigen
  
 program catigen, rclass
@@ -81,32 +81,43 @@ program catigen, rclass
 				foreach var of local capilabels {
 						loc lang`x' = "`var'"
 						loc ++x
-				}				
-			
+				}		
+
 			tempfile capi_choice 
 			save `capi_choice'
 
+	
 			import excel using `"`saving'"', sheet(choices) clear first all
 
 			* rename all labels to make them uniform			
 				unab catilabels: label* 
 				foreach var of local catilabels {
 					forval x = 1/`capicount' {
-						if regex(lower("`var'"), lower("`lang`x''")) {
-							ren `var' `lang`x''
-						}					
+						cap confirm var  `lang`x''
+						if _rc g `lang`x'' = `var', after(`var')
+						if !_rc replace `lang`x'' = `var'
 					}						
 				}
-		
-			merge m:m list_name value using `capi_choice', nogen
-			drop if mi(list_name)
-			
-			foreach var of varlist _all {
-				capture assert mi(`var')
-				if !_rc {
-					drop `var'
+				
+				append using `capi_choice'
+				drop if mi(list_name)
+				
+								
+				foreach var of local catilabels {
+					forval x = 1/`capicount' {
+						replace `var' = `lang`x'' if mi(`var')
+					}						
 				}
-			}
+				
+				foreach var of varlist _all {
+					if length("`var'")<=2 drop `var'
+					/* The below code drops all empty columns, which may be misleading
+					capture assert mi(`var')
+					if !_rc {
+						drop `var'
+					}
+					*/
+				}
 			
 			set obs `=_N+1'
 			
@@ -117,6 +128,7 @@ program catigen, rclass
 			
 			g sl = _N - _n
 			replace sl = 999999 if value=="value"
+			
 			gsort -sl
 			drop sl
 			
@@ -150,7 +162,7 @@ program catigen, rclass
 				}	
 				
 			* Find all hints 
-				unab capihintvars: hint*
+				cap unab capihintvars: hint*
 				loc capihintcount `=wordcount("`capihintvars'")'
 			
 				loc x = 1
@@ -160,7 +172,7 @@ program catigen, rclass
 				}
 				
 				* Find all constraintmessage 
-				unab capiconsmessvars: constraintmessage*
+				cap unab capiconsmessvars: constraintmessage*
 				loc capiconsmesscount `=wordcount("`capiconsmessvars'")'
 			
 				loc x = 1
@@ -170,7 +182,7 @@ program catigen, rclass
 				}
 				
 				* Find all mediaimage
-				unab capimimagevars: mediaimage*
+				cap unab capimimagevars: mediaimage*
 				loc capmimagecount `=wordcount("`capimimagevars'")'
 			
 				loc x = 1
@@ -207,28 +219,30 @@ program catigen, rclass
 				unab catilabels: label* 
 				foreach var of local catilabels {
 					forval x = 1/`capicount' {
-						if regex(lower("`var'"), lower("`lang`x''")) {
-							ren `var' `lang`x''
-						}
+						cap confirm var  `lang`x''
+						if _rc g `lang`x'' = `var', after(`var')
+						if !_rc replace `lang`x'' = `var'
 					}						
 				}
+				
 			/*
 				Do the above for hint constraintmessage mediaimage mediaaudio mediavideo
 				
 			*/
 			* rename all '===hints===' to make them uniform			
-				unab catihintvars: hint* 
+				cap unab catihintvars: hint* 
 				foreach var of local catihintvars {
 					forval x = 1/`capihintcount' {
-						if regex(lower("`var'"), lower("`hint`x''")) {
-							ren `var' `hint`x''
-						}
+						cap confirm var  `hint`x''
+						if _rc g `hint`x'' = `var', after(`var')
+						if !_rc replace `hint`x'' = `var'
+						replace `var' = `hint`x'' if mi(`var')
 					}						
 				}
 			
 
 				* rename all '===constraintmessage===' to make them uniform			
-					unab caticonsmsvars: constraintmessage* 
+					cap unab caticonsmsvars: constraintmessage* 
 					
 					if `capiconsmesscount'==1 {
 						cap g `capiconsmessvars' = constraintmessageenglish
@@ -249,12 +263,12 @@ program catigen, rclass
 						}
 					}
 
-					order `capiconsmessvars', after(constraint)
+					cap order `capiconsmessvars', after(constraint)
 				
 				
 				
 				* drop all '===mediaimage===' to make them uniform			
-					drop mediaimage* 
+					cap drop mediaimage* 
 				
 				
 			
@@ -288,9 +302,26 @@ program catigen, rclass
 					
 				* Bring in CATI last part
 					append using `cati_end'
+					
+					
+				* Copy labels to all labels	
+					foreach var of local catilabels {
+						forval x = 1/`capicount' {
+							replace `var' = `lang`x'' if mi(`var')
+							replace `lang`x'' = `var' if mi(`lang`x'')
+						}						
+					}
+				
+				* Copy hins to all hints
+					foreach var of local catihintvars {
+						forval x = 1/`capihintcount' {
+							replace `var' = `hint`x'' if mi(`var')
+							replace `hint`x'' = `var' if mi(`hint`x'')
+						}						
+					}
 				
 				* Order media image
-					order media*, after(repeat_count)
+					cap order media*, after(repeat_count)
 				
 				/*
 								
@@ -315,20 +346,25 @@ program catigen, rclass
 				foreach langs in label hint constraintmessage mediaimage mediaaudio mediavideo {
 					unab labels: `langs'* 
 					foreach var of local labels {
-						if `var' != "`langs'" replace `var' = regexr(`var', "`langs'", "`langs'::") in 1
+						cap if `var' != "`langs'" replace `var' = regexr(`var', "`langs'", "`langs'::") in 1
 					}		
 				}
 				
 
-				unab media_vars: media*
+				cap unab media_vars: media*
 				foreach var of loc media_vars {
 					replace `var' = regexr(`var', "media", "media::") in 1
 				}
 				
 				
-				unab cons_vars: constraintmessage*
+				cap unab cons_vars: constraintmessage*
 				foreach var of loc cons_vars {
 					replace `var' = regexr(`var', "constraint", "constraint ") in 1
+				}
+
+				cap unab req_vars: requiredmessage*
+				foreach var of loc req_vars {
+					replace `var' = regexr(`var', "required", "required ") in 1
 				}
 				
 			
